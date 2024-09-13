@@ -1,0 +1,89 @@
+# ТЗ : Есть товар - рыба, представленный десятью позициями разной стоимости. Есть клиенты, в количестве семи человек,
+# на разных адресах. От них в день есть, соответственно, семь заказов на разное количество разных позиций рыбы. 
+# Есть водитель, который развозит клиентам их собранные заказы и берёт с них оплату за них наличными деньгами.
+# Задача: составить алгоритм, который будет составлять для водителя некое подобие маршрутного листа, в котором 
+# будут указаны клиенты, их адреса, товары в их заказах и стоимость заказов, а также будет автоматически подсчитывать 
+# общую сумму заказов и заработок водителя в день из учёта 250 рублей/адрес.
+
+fish_nom = {'Salmon':4000.47, 'Trout':3500.5, 'Catfish':6499.75, 'Hailbut':2801.54, 'Sturgeon':5100,
+            'Herring':330, 'Red salmon':3195.4, 'Coho salmon':3650, 'Tuna':2550.25, 'Marlin':2100}
+clients = {'Client_1':'Address_1', 'Client_2':'Address_2', 'Client_3':'Address_3', 'Client_4':'Address_4',
+            'Client_5':'Address_5', 'Client_6':'Address_6', 'Client_7':'Address_7' }
+
+clients_orders = []
+current_order = {}
+clients_totals = []
+current_sum = {}
+total = 0
+orders = 0
+fish_names = []
+
+for i in fish_nom.keys():
+    i = i.casefold()
+    fish_names.append(i)
+
+l = True
+client_number = 1
+for k in clients.keys():
+    i = 0
+    customer_order = {}
+    order_sum = 0
+    orders += 1
+    driver_check = 0
+    while i < len(fish_nom):
+        print('--------------------------')
+        print(f'Order {client_number}:',k)
+        print(customer_order)
+        print(f'Total: {round(order_sum, 2)} roubles')
+        fish_list = []
+        weight_list = []
+        j = input('Enter type of fish you would like to order, "clear" for clearing order,\n"next" to switch '
+                  'customer or "exit" to finish making orders: ')
+        j = j.casefold()
+        if j == "next":
+            client_number += 1
+            i = 0
+            break
+        if j == "exit":
+            l = False
+            if driver_check == 0:
+                orders = 0
+            break
+        driver_check += 1
+        if j == "clear":
+            fish_list.clear()
+            order_sum = 0
+            customer_order.clear()
+            continue
+        if j.capitalize() not in fish_nom.keys():
+            print(f'<{j.capitalize()}>')
+            print('No such a fish in our catalog!')
+            continue
+        fish_price = float(fish_nom[j.capitalize()])
+        print(f'Price is: {fish_price} roubles.')
+        if j in customer_order:
+            print('Already in the order!')
+            continue
+        fish_list.append(j)
+        w = float(input('Enter the weight in kilos: '))
+        weight_list.append(w)
+        customer_order.update(zip(fish_list, weight_list))
+        i += 1
+        current_order[k] = customer_order
+        order_sum = order_sum + fish_price * w
+        current_sum[k] = order_sum
+        total += order_sum
+    if not l:
+        break
+clients_orders.append(current_order)
+clients_totals.append(current_sum)
+
+
+print('==========================')
+for f in clients_orders:
+   for d in f.keys():
+       for s in clients.keys():
+           if d == s:
+                print(f'{s} // Order: {f[s]} // Address: {clients[s]} // Total: {current_sum[s]} roubles')
+print(f'Total: {total} roubles')
+print(f"Driver's earnings: {orders * 250} roubles")
